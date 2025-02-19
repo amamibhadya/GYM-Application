@@ -4,7 +4,7 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  overflow-x: hidden;
+  
   font-family: "Roboto", sans-serif;
 }
 
@@ -46,7 +46,7 @@ header p {
 }
 .hero .content .title {
   color: whitesmoke;
-  font-size: 4rem;
+  font-size: 2.5rem;
 }
 .hero .content .sub-title p {
   font-weight: 400;
