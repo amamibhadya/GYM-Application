@@ -1,10 +1,15 @@
 import React from "react";
+import { Link } from "react-router-dom"; // Import Link from react-router-dom
 
 const Navbar = () => {
   return (
     <header>
-      <p>SITU FITNESS</p>
+      <div className="logo">
+        <p>SITU FITNESS</p>
+      </div>
+      
     </header>
+    
   );
 };
 
