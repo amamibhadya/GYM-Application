@@ -605,3 +605,123 @@ footer {
     gap: 1px;
   }
 }
+
+@media (max-width: 735px) {
+/* Background and Page Styling */
+.signin-page-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+}
+
+.signin-page-container-dark {
+  background-color: #1a202c; /* Dark mode background */
+  color: white;
+}
+
+.signin-page-container-light {
+  background-color: #f7fafc; /* Light mode background */
+  color: white;
+}
+
+/* SignIn Form Container */
+.signin-form-container {
+  width: 100%;
+  max-width: 28rem;
+  padding: 2rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  background-opacity: 0.5;
+}
+
+/* Heading */
+.signin-heading {
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+/* Input Fields */
+.input-field {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #d1d5db; /* Border color */
+  border-radius: 0.75rem;
+  outline: none;
+  margin-bottom: 1rem;
+}
+
+.input-field:focus {
+  border-color: #3182ce;
+  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5);
+}
+
+/* Submit Button */
+.submit-button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background-color: #1e3a8a;
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.submit-button:hover {
+  background-color: #1e40af;
+}
+
+/* Separator Line */
+.separator-line {
+  display: flex;
+  align-items: center;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.separator-line div {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #d1d5db;
+}
+
+.separator-line span {
+  padding: 0 1rem;
+  color: #6b7280;
+}
+
+/* Sign in with provider buttons */
+.provider-button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background-color: #f3f4f6;
+  color: black;
+  font-size: 1.125rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s ease-in-out;
+  margin-bottom: 1rem;
+}
+
+.provider-button:hover {
+  background-color: #e5e7eb;
+}
+
+/* Links */
+.link {
+  color: #3182ce;
+  text-decoration: underline;
+}
+
+.link:hover {
+  color: #2b6cb0;
+}
+
+}
