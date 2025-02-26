@@ -495,7 +495,7 @@ header p {
 }
 .contact form button {
   border: none;
-  color: whitesmoke;
+  color: rgb(3, 3, 3);
   background: #0095ff;
   padding: 10px;
   font-size: 20px;
@@ -534,7 +534,7 @@ footer {
   margin: 0 auto;
   letter-spacing: 1px;
   text-transform: uppercase;
-  color: whitesmoke;
+  color: rgb(5, 5, 5);
 }
 .bmi .container {
   display: flex;
@@ -627,16 +627,6 @@ footer {
   color: white;
 }
 
-/* SignIn Form Container */
-.signin-form-container {
-  width: 100%;
-  max-width: 28rem;
-  padding: 2rem;
-  background-color: rgba(0, 0, 0, 0.7);
-  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-  border-radius: 1rem;
-  background-opacity: 0.5;
-}
 
 /* Heading */
 .signin-heading {
@@ -724,4 +714,240 @@ footer {
   color: #2b6cb0;
 }
 
+}
+
+/* new styles */
+
+.signin-page-container {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-size: cover;
+  background-position: center;
+  width:100%;
+  padding: 0;
+}
+
+.signin-page-container-dark {
+  background-color: #1a202c; /* Dark mode background */
+  color: white;
+}
+
+.signin-page-container-light {
+  background-color: #f7fafc; /* Light mode background */
+  color: white;
+}
+
+/* SignIn Form Container */
+.signin-form-container {
+  width: 100%;  
+  max-width: 100%; 
+  padding: 2rem;
+  background-color: rgba(0, 0, 0, 0.7);
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+}
+
+/* Heading */
+.signin-heading {
+  font-size: 2rem;
+  font-weight: 800;
+  text-align: center;
+  margin-bottom: 2rem;
+  color: white;
+}
+
+/* Input Fields */
+.input-field {
+  width: 100%;
+  padding: 1rem;
+  border: 1px solid #d1d5db; /* Border color */
+  border-radius: 0.75rem;
+  outline: none;
+  margin-bottom: 1rem;
+  background-color: #fff;
+}
+
+.input-field:focus {
+  border-color: #3182ce;
+  box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.5);
+}
+
+/* Submit Button */
+.submit-button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background-color: #1e3a8a;
+  color: white;
+  font-size: 1.125rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s ease-in-out;
+}
+
+.submit-button:hover {
+  background-color: #1e40af;
+}
+
+/* Divider */
+.separator-line {
+  display: flex;
+  align-items: center;
+  margin-top: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.separator-line div {
+  flex-grow: 1;
+  height: 1px;
+  background-color: #d1d5db;
+}
+
+.separator-line span {
+  padding: 0 1rem;
+  color: #6b7280;
+}
+
+/* Sign In with provider buttons */
+.provider-button {
+  width: 100%;
+  padding: 1rem 1.5rem;
+  background-color: #f3f4f6;
+  color: black;
+  font-size: 1.125rem;
+  font-weight: 500;
+  border-radius: 0.75rem;
+  transition: background-color 0.2s ease-in-out;
+  margin-bottom: 1rem;
+}
+
+.provider-button:hover {
+  background-color: #e5e7eb;
+}
+
+/* Links */
+.link {
+  color: #3182ce;
+  text-decoration: underline;
+}
+
+.link:hover {
+  color: #2b6cb0;
+}
+
+/* For Form in the Background */
+form {
+  background: rgba(0, 0, 0, 0.5); /* semi-transparent black background */
+  padding: 20px;
+  border-radius: 10px;
+  max-width: 500px;
+  margin: auto;
+}
+
+input[type="email"], input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 15px;
+  border-radius: 5px;
+  border: 1px solid #ccc;
+}
+
+input:focus {
+  outline: none;
+  border-color: #3182ce;
+}
+
+button[type="submit"] {
+  width: 100%;
+  background-color: #1E3A8A;
+  color: #fff;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+button[type="submit"]:hover {
+  background-color: #1E40AF;
+}
+
+button[type="button"] {
+  width: 100%;
+  background-color: #F3F4F6;
+  color: #000;
+  padding: 10px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  margin-top: 10px;
+}
+
+button[type="button"]:hover {
+  background-color: #E5E7EB;
+}
+
+@media (max-width: 768px) {
+  .signin-form-container {
+    padding: 1rem;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+
+  }
+
+  .signin-heading {
+    font-size: 1.5rem;
+  }
+
+  .input-field {
+    padding: 0.8rem;
+    font-size: 1rem;
+  }
+
+  .submit-button {
+    padding: 1rem;
+    font-size: 1rem;
+  }
+
+  .provider-button {
+    font-size: 1rem;
+    padding: 1rem;
+  }
+}
+
+/* Card Container Adjustments */
+.w-full {
+  max-width: 100%;
+}
+
+.text-white {
+  color: white !important;
+}
+
+
+.bg-opacity-50 {
+  background-color: rgba(0, 0, 0, 0.5); /* Set background color with transparency using rgba */
+}
+
+.text-2xl {
+  font-size: 1.5rem;
+}
+
+.font-extrabold {
+  font-weight: 800;
+}
+
+.mb-8 {
+  margin-bottom: 2rem;
+}
+
+.space-y-4 {
+  margin-bottom: 1rem;
+}
+
+.mt-6 {
+  margin-top: 1.5rem;
 }

@@ -61,7 +61,7 @@ export default function ThemeSignInPage() {
                     <button
                         type="submit"
                         className="w-full py-3 px-6 bg-[#1E3A8A] text-white font-medium text-lg rounded-lg hover:bg-[#1E40AF] transition duration-200" >
-                       <Link to="/home" className="text-blue-600 underline hover:text-blue-700">
+                       <Link to="/" className="text-blue-600 underline hover:text-blue-700">
                             Sign In
                         </Link>
                     </button>
