@@ -11,30 +11,23 @@ const BMICalculator = () => {
     e.preventDefault();
 
     if (!height || !weight || !gender) {
-      toast.error("Please enter valid height, weight and gender.");
+      toast.error("Please enter valid height, weight, and gender.");
       return;
     }
 
-    const heightInMeters = height / 100;
-    const bmiValue = (weight / (heightInMeters * heightInMeters)).toFixed(2);
+    const heightInMeters = parseFloat(height) / 100;
+    const weightInKg = parseFloat(weight);
+    const bmiValue = (weightInKg / (heightInMeters * heightInMeters)).toFixed(2);
     setBmi(bmiValue);
 
     if (bmiValue < 18.5) {
-      toast.warning(
-        "You are underweight. Consider seeking advide from a healthcare provider."
-      );
+      toast.warning("You are underweight. Consider seeking advice from a healthcare provider.");
     } else if (bmiValue >= 18.5 && bmiValue < 24.9) {
-      toast.success(
-        "You have normal weight. Keep maintaing a healthy lifestyle."
-      );
+      toast.success("You have a normal weight. Keep maintaining a healthy lifestyle.");
     } else if (bmiValue >= 25 && bmiValue < 29.9) {
-      toast.warning(
-        "You are overweight. Consider seeking advide from a healthcare provider."
-      );
+      toast.warning("You are overweight. Consider seeking advice from a healthcare provider.");
     } else {
-      toast.error(
-        "You are in the obese range. It is recommended to seek advice from a healthcare specialist.."
-      );
+      toast.error("You are in the obese range. It is recommended to seek advice from a healthcare specialist.");
     }
   };
 
@@ -51,6 +44,7 @@ const BMICalculator = () => {
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
                 required
+                min="1"
               />
             </div>
             <div>
@@ -60,6 +54,7 @@ const BMICalculator = () => {
                 value={weight}
                 onChange={(e) => setWeight(e.target.value)}
                 required
+                min="1"
               />
             </div>
             <div>
@@ -67,6 +62,7 @@ const BMICalculator = () => {
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
+                required
               >
                 <option value="">Select Gender</option>
                 <option value="Male">Male</option>

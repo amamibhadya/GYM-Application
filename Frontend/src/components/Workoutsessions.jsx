@@ -2,7 +2,7 @@ import React from 'react'
 
 function Workoutsessions() {
   return (
-    <div>Workoutsessions</div>
+    <div></div>
   )
 }
 
