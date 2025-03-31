@@ -326,7 +326,7 @@ header p {
   left: 0;
 }
 .pricing .wrapper .card .description {
-  background: whitesmoke;
+  background: transparent;  /* Changed from rgb(50, 46, 46) to transparent */
   position: relative;
   z-index: 1;
   flex: 3;
@@ -337,6 +337,7 @@ header p {
   padding: 0 30px;
   gap: 20px;
 }
+
 .pricing .wrapper .card .description p {
   display: flex;
   gap: 20px;
@@ -467,7 +468,7 @@ header p {
   padding-right: 7rem;
 }
 .contact form {
-  background: whitesmoke;
+  background: rgb(35, 34, 34);
   width: 650px;
   padding: 40px;
   display: flex;
