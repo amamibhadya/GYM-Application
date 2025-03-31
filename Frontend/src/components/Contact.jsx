@@ -13,8 +13,8 @@ const Contact = () => {
     e.preventDefault();
     setLoading(true);
     try {
-      const { data } = await axios.post(
-        "http://localhost:4000/send/mail",
+      const response = await axios.post(
+        "http://localhost:3001/send/mail",
         {
           name,
           email,
@@ -25,16 +25,26 @@ const Contact = () => {
           headers: { "Content-Type": "application/json" },
         }
       );
-      setName("");
-      setEmail("");
-      setMessage("");
-      toast.success(data.message);
-      setLoading(false);
+      if (response && response.data) {
+        toast.success(response.data.message);
+        setName("");
+        setEmail("");
+        setMessage("");
+      } else {
+        toast.error("Unexpected response from server");
+      }
     } catch (error) {
       setLoading(false);
-      toast.error(error.response.data.message);
+      if (error.response && error.response.data) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("An error occurred. Please try again.");
+      }
+    } finally {
+      setLoading(false);
     }
   };
+  
 
   return (
     <section className="contact">
