@@ -1,12 +1,6 @@
 pipeline {
     agent any 
     
-    environment {
-        DOCKER_HUB_CREDENTIALS = credentials('gym')  // Store Docker credentials
-        DOCKER_USERNAME = 'Uresha2001'
-        BUILD_VERSION = "${env.BUILD_NUMBER}"
-    }
-
     stages { 
         stage('SCM Checkout') {
             steps {
@@ -15,51 +9,26 @@ pipeline {
                 }
             }
         }
-
-        stage('Build Backend Docker Image') {
-            steps {
-                bat 'docker build -t Uresha2001/backend:%BUILD_VERSION% ./backend'
+        stage('Build Docker Image') {
+            steps {  
+                bat 'docker build -t AmamiBhadya/nodeapp-cuban:%BUILD_NUMBER% .'
             }
         }
-
-        stage('Build Frontend Docker Image') {
+        stage('Login to Docker Hub') {
             steps {
-                bat 'docker build -t Uresha2001/frontend:%BUILD_VERSION% ./frontend'
-            }
-        }
-
-         stage('Login to Docker Hub') {
-            steps {
-                withCredentials([string(credentialsId: 'gym', variable: 'gym')]) {
+                withCredentials([string(credentialsId: 'test-dockerhubpassword', variable: 'test-dockerhubpassword')]) {
                     script {
-                        bat "docker login -u Uresha2001 -p %gym%"
+                        bat "docker login -u amamibhadya -p %test-dockerhubpassword%"
                     }
                 }
             }
         }
-
-        stage('Push Backend Image') {
+        stage('Push Image') {
             steps {
-                bat 'docker push Uresha2001/backend:%BUILD_VERSION%'
-            }
-        }
-
-        stage('Push Frontend Image') {
-            steps {
-                bat 'docker push Uresha2001/frontend:%BUILD_VERSION%'
-            }
-        }
-
-        stage('Deploy with Docker Compose') {
-            steps {
-                bat '''
-                docker-compose down
-                docker-compose up -d
-                '''
+                bat 'docker push amamibhadya/nodeapp-cuban:%BUILD_NUMBER%'
             }
         }
     }
-
     post {
         always {
             bat 'docker logout'
