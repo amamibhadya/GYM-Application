@@ -1,37 +1,44 @@
 pipeline {
-    agent any 
-    
-    stages { 
-        stage('SCM Checkout') {
+    agent any  // Use any available node
+
+    environment {
+        IMAGE_NAME = 'yourdockerhubusername/yourapp' // Docker image name
+        DOCKER_CREDS = credentials('dockerhub-creds')  // Jenkins credentials ID for Docker Hub
+    }
+
+    stages {
+        stage('Clone Repository') {
             steps {
-                retry(3) {
-                    git branch: 'main', url: 'https://github.com/amamibhadya/GYM-Application'
+                git 'https://github.com/amamibhadya/GYM-Application.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                node {
+                    // Make sure the build runs inside a node context
+                    bat 'docker-compose build'  // Running Docker build using bat command on Windows
                 }
             }
         }
-        stage('Build Docker Image') {
-            steps {  
-                bat 'docker build -t AmamiBhadya/nodeapp-cuban:%BUILD_NUMBER% .'
-            }
-        }
-        stage('Login to Docker Hub') {
+
+        stage('Push to Docker Hub') {
             steps {
-                withCredentials([string(credentialsId: 'test-dockerhubpassword', variable: 'test-dockerhubpassword')]) {
-                    script {
-                        bat "docker login -u amamibhadya -p %test-dockerhubpassword%"
+                node {
+                    withCredentials([usernamePassword(credentialsId: 'dockerhub-creds', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
+                        bat 'echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin'
+                        bat 'docker-compose push'
                     }
                 }
             }
         }
-        stage('Push Image') {
+
+        stage('Deploy') {
             steps {
-                bat 'docker push amamibhadya/nodeapp-cuban:%BUILD_NUMBER%'
+                node {
+                    bat 'docker-compose down && docker-compose up -d'
+                }
             }
-        }
-    }
-    post {
-        always {
-            bat 'docker logout'
         }
     }
 }
