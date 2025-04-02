@@ -107,6 +107,12 @@ pipeline {
                             bat "docker push ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}"
                         }
                     }
+
+                stage('Deploy') {
+                    steps {
+                        sh 'ansible-playbook -i inventory.ini deploy.yml'
+                    }
+                }
         
             }
         }
