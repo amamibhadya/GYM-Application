@@ -107,7 +107,7 @@ pipeline {
                             bat "docker push ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}"
                         }
                     }
-                }
+        
             }
         }
     }
