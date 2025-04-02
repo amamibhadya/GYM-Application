@@ -107,17 +107,18 @@ pipeline {
                             bat "docker push ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}"
                         }
                     }
-
-                stage('Deploy') {
-                    steps {
-                        sh 'ansible-playbook -i inventory.ini deploy.yml'
-                    }
                 }
-        
+            }
+        }
+
+        // Deploy stage moved outside parallel
+        stage('Deploy') {
+            steps {
+                sh 'ansible-playbook -i inventory.ini deploy.yml'
             }
         }
     }
-    
+
     post {
         always {
             bat 'docker logout'
