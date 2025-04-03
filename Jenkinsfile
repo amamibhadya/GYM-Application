@@ -112,11 +112,11 @@ pipeline {
         }
 
         // Deploy stage moved outside parallel
-        stage('Deploy') {
-            steps {
-                sh 'ansible-playbook -i inventory.ini deploy.yml'
-            }
-        }
+        // stage('Deploy') {
+        //     steps {
+        //         sh 'ansible-playbook -i inventory.ini deploy.yml'
+        //     }
+        // }
     }
 
     post {
