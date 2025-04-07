@@ -79,10 +79,11 @@ pipeline {
             steps {
                 script {
                     // Full path to WSL executable and Ansible playbook
-                    sh 'C:\\Windows\\System32\\wsl.exe ansible-playbook /path/to/your/ansible/playbook.yml'
+                    bat 'C:\\Windows\\System32\\wsl.exe ansible-playbook /path/to/your/ansible/playbook.yml'
                 }
             }
         }
+
     }
 
     post {
