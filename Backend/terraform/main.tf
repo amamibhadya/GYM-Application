@@ -48,3 +48,9 @@ resource "aws_instance" "my_ec2_instance" {
 
   # Optionally, specify the subnet_id and associate a VPC if you need
 }
+resource "aws_instance" "my_instance" {
+  # This is just a placeholder for import.
+  # You will update these arguments after import.
+  ami           = "ami-1234567890abcdef0"  # placeholder
+  instance_type = "t3.micro"              # placeholder
+}
