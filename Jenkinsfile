@@ -79,7 +79,9 @@ pipeline {
             steps {
                 script {
                     // Full path to WSL executable and Ansible playbook
-                    bat 'C:\Windows\System32\wsl.exe -u uresha ansible-playbook c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml'
+                    //bat 'C:\Windows\System32\wsl.exe -u uresha ansible-playbook c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml'
+                    bat """C:\\Windows\\System32\\wsl.exe -u uresha ansible-playbook c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml"""
+
 
                 }
             }
