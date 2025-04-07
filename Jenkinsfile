@@ -157,9 +157,9 @@ pipeline {
     agent any
 
     environment {
-        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')  // AWS credentials in Jenkins
+        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-        AWS_DEFAULT_REGION = 'eu-north-1' // Change to your preferred region
+        AWS_DEFAULT_REGION = 'eu-north-1'
         DOCKER_HUB_CREDENTIALS = credentials('gym')
         DOCKER_USERNAME = 'uresha2001'
         BUILD_TAG = "${env.BUILD_NUMBER ?: 'latest'}"
@@ -236,8 +236,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 script {
-                    // Run Terraform Init inside WSL
-                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform init"""
+                    bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform init'
                 }
             }
         }
@@ -245,8 +244,7 @@ pipeline {
         stage('Terraform Import Key Pair') {
             steps {
                 script {
-                    // Import Key Pair inside WSL
-                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform import aws_key_pair.key_pair my-terraform-key /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform"""
+                    bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_key_pair.key_pair my-terraform-key'
                 }
             }
         }
@@ -254,8 +252,7 @@ pipeline {
         stage('Terraform Import EC2 Instance') {
             steps {
                 script {
-                    // Import EC2 Instance inside WSL
-                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform import aws_instance.my_instance i-0abc1234d567890ef /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform"""
+                    bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_instance.my_instance i-0abc1234d567890ef'
                 }
             }
         }
@@ -263,8 +260,7 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 script {
-                    // Run Terraform Plan inside WSL
-                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform plan -out=tfplan /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform"""
+                    bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform plan -out=tfplan'
                 }
             }
         }
@@ -272,8 +268,7 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 script {
-                    // Run Terraform Apply inside WSL
-                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform apply -auto-approve tfplan /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform"""
+                    bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform apply -auto-approve tfplan'
                 }
             }
         }
@@ -281,8 +276,7 @@ pipeline {
         stage('Deploy to EC2 using Ansible') {
             steps {
                 script {
-                    // Ensure the path is correct for your Ansible playbook
-                    bat """C:\\Windows\\System32\\wsl.exe -u uresha ansible-playbook /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml"""
+                    bat 'C:\\Windows\\System32\\wsl.exe -u uresha ansible-playbook /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml'
                 }
             }
         }
