@@ -380,6 +380,7 @@ pipeline {
         stage('Terraform Init') {
             steps {
                 bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform init'
+                bat 'C:\\Windows\\System32\\wsl -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform state rm aws_key_pair.key_pair'
             }
         }
 
@@ -391,7 +392,7 @@ pipeline {
 
         stage('Terraform Import Security Group') {
             steps {
-                bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_security_group.allow_ssh sg-xxxxxxxx'
+                bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_security_group.allow_ssh sg-06d24b01d8b0fb022'
             }
         }
 
