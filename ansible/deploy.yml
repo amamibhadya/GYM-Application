@@ -1,0 +1,60 @@
+- name: Deploy Docker Containers on EC2
+  hosts: webserver
+  become: true
+  tasks:
+    - name: Pull Docker images for frontend, backend, and mongo
+      docker_image:
+        name: "{{ item }}"
+        source: pull
+      loop:
+        - uresha2001/frontend
+        - uresha2001/backend
+        - uresha2001/mongo
+
+    - name: Stop and remove existing containers
+      docker_container:
+        name: "{{ item }}"
+        state: absent
+      loop:
+        - frontend_container
+        - backend_container
+        - mongo_container
+
+    - name: Start frontend container
+      docker_container:
+        name: frontend_container
+        image: uresha2001/frontend:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "5173:5173"
+        depends_on:
+          - backend
+        stdin_open: true
+        tty: true
+
+    - name: Start backend container
+      docker_container:
+        name: backend_container
+        image: uresha2001/backend:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "3001:3001"
+        depends_on:
+          - mongo
+
+    - name: Start MongoDB container
+      docker_container:
+        name: mongo_container
+        image: mongo:6.0
+        state: started
+        restart_policy: always
+        ports:
+          - "27017:27017"
+        volumes:
+          - mongo_data:/data/db
+
+volumes:
+  mongo_data:
+
