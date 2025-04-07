@@ -78,13 +78,12 @@ pipeline {
         stage('Deploy to EC2 using Ansible') {
             steps {
                 script {
-                    // Full path to WSL executable
+                    // Full path to WSL executable and Ansible playbook
                     sh 'C:\\Windows\\System32\\wsl.exe ansible-playbook /path/to/your/ansible/playbook.yml'
                 }
             }
         }
-
-
+    }
 
     post {
         always {
