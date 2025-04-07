@@ -237,7 +237,7 @@ pipeline {
             steps {
                 script {
                     // Run Terraform Init inside WSL
-                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform init /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform"""
+                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform init"""
                 }
             }
         }
