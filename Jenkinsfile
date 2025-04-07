@@ -237,6 +237,7 @@ pipeline {
             steps {
                 script {
                     bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform init'
+                    bat 'C:\\Windows\\System32\\wsl -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform state rm aws_key_pair.key_pair'
                 }
             }
         }
