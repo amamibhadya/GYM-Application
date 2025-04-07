@@ -77,10 +77,13 @@ pipeline {
 
         stage('Deploy to EC2 using Ansible') {
             steps {
-                sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'tag=${BUILD_TAG}'"
+                script {
+                    // Using WSL to run Ansible
+                    sh 'wsl ansible-playbook /path/to/your/ansible/playbook.yml'
+                }
             }
         }
-    }
+
 
     post {
         always {
