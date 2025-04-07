@@ -159,7 +159,7 @@ pipeline {
     environment {
         AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')  // AWS credentials in Jenkins
         AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-        AWS_DEFAULT_REGION = 'us-east-1' // Change to your preferred region
+        AWS_DEFAULT_REGION = 'eu-north-1' // Change to your preferred region
         DOCKER_HUB_CREDENTIALS = credentials('gym')
         DOCKER_USERNAME = 'uresha2001'
         BUILD_TAG = "${env.BUILD_NUMBER ?: 'latest'}"
