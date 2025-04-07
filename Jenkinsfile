@@ -152,7 +152,6 @@
 //     }
 // }
 
-
 pipeline {
     agent any
 
@@ -235,7 +234,7 @@ pipeline {
                 withCredentials([string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
                                  string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
                     script {
-                        dir('terraform-aws') {
+                        dir('backend/terraform') {
                             bat "set AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} && set AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} && terraform init"
                         }
                     }
@@ -247,11 +246,8 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
                                  string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    withEnv([
-                        "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}",
-                        "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
-                    ]) {
-                        dir('terraform-aws') {
+                    withEnv([ "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}", "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" ]) {
+                        dir('backend/terraform') {
                             bat 'terraform plan -out=tfplan'
                         }
                     }
@@ -263,11 +259,8 @@ pipeline {
             steps {
                 withCredentials([string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
                                  string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    withEnv([
-                        "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}",
-                        "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}"
-                    ]) {
-                        dir('terraform-aws') {
+                    withEnv([ "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}", "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" ]) {
+                        dir('backend/terraform') {
                             bat 'terraform apply -auto-approve tfplan'
                         }
                     }
@@ -278,12 +271,11 @@ pipeline {
         stage('Deploy to EC2 using Ansible') {
             steps {
                 script {
-                    // Full path to WSL executable and Ansible playbook
+                    // Ensure the path is correct for your Ansible playbook
                     bat """C:\\Windows\\System32\\wsl.exe -u uresha ansible-playbook /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml"""
                 }
             }
         }
-
     }
 
     post {
