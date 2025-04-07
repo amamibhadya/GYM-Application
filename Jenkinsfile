@@ -1,8 +1,8 @@
 pipeline {
-    agent any 
+    agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('gym')  
+        DOCKER_HUB_CREDENTIALS = credentials('gym')
         DOCKER_USERNAME = 'uresha2001'
         BUILD_TAG = "${env.BUILD_NUMBER ?: 'latest'}"
         DOCKER_IMAGE_FRONTEND = "uresha2001/frontend"
@@ -10,7 +10,7 @@ pipeline {
         DOCKER_IMAGE_DATABASE = "uresha2001/mongo"
     }
 
-    stages { 
+    stages {
         stage('SCM Checkout') {
             steps {
                 retry(3) {
@@ -111,19 +111,21 @@ pipeline {
             }
         }
 
-        // Deploy stage moved outside parallel
-        // stage('Deploy') {
-        //     steps {
-        //         sh 'ansible-playbook -i inventory.ini deploy.yml'
-        //     }
-        // }
+        stage('Deploy to EC2 using Ansible') {
+            steps {
+                script {
+                    // Trigger the Ansible Playbook to deploy the Docker containers on EC2
+                    sh 'ansible-playbook -i inventory.ini deploy.yml'
+                }
+            }
+        }
     }
 
     post {
         always {
             bat 'docker logout'
             echo "Logged out from Docker Hub."
-            bat 'docker-compose down -v || true'  
+            bat 'docker-compose down -v || true'
         }
         failure {
             echo "Pipeline failed. Check logs."
