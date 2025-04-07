@@ -1,3 +1,4 @@
+---
 - name: Deploy Docker Containers on EC2
   hosts: webserver
   become: true
@@ -20,30 +21,6 @@
         - backend_container
         - mongo_container
 
-    - name: Start frontend container
-      docker_container:
-        name: frontend_container
-        image: uresha2001/frontend:latest
-        state: started
-        restart_policy: always
-        ports:
-          - "5173:5173"
-        depends_on:
-          - backend
-        stdin_open: true
-        tty: true
-
-    - name: Start backend container
-      docker_container:
-        name: backend_container
-        image: uresha2001/backend:latest
-        state: started
-        restart_policy: always
-        ports:
-          - "3001:3001"
-        depends_on:
-          - mongo
-
     - name: Start MongoDB container
       docker_container:
         name: mongo_container
@@ -55,6 +32,29 @@
         volumes:
           - mongo_data:/data/db
 
-volumes:
-  mongo_data:
+    - name: Start backend container
+      docker_container:
+        name: backend_container
+        image: uresha2001/backend:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "3001:3001"
+        depends_on: mongo_container
+        stdin_open: true
+        tty: true
 
+    - name: Start frontend container
+      docker_container:
+        name: frontend_container
+        image: uresha2001/frontend:latest
+        state: started
+        restart_policy: always
+        ports:
+          - "5173:5173"
+        depends_on: backend_container
+        stdin_open: true
+        tty: true
+
+  volumes:
+    mongo_data:
