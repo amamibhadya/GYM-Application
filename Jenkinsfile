@@ -152,16 +152,16 @@
 //     }
 // }
 
+// 
 pipeline {
     agent any
 
     environment {
-        DOCKER_HUB_CREDENTIALS = credentials('gym')  // Docker Hub credentials
-        DOCKER_USERNAME = 'uresha2001'
-        BUILD_TAG = "${env.BUILD_NUMBER ?: 'latest'}"
-        DOCKER_IMAGE_FRONTEND = "uresha2001/frontend"
+        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')  // AWS credentials in Jenkins
+        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
+        AWS_DEFAULT_REGION = 'us-east-1' // Change to your preferred region
         DOCKER_IMAGE_BACKEND = "uresha2001/backend"
-        DOCKER_IMAGE_DATABASE = "uresha2001/mongo"
+        BUILD_TAG = "${env.BUILD_NUMBER ?: 'latest'}"
     }
 
     stages {
@@ -229,14 +229,33 @@ pipeline {
             }
         }
 
+
         stage('Terraform Init') {
             steps {
-                withCredentials([string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
-                                 string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    script {
-                        dir('backend/terraform') {
-                            bat "set AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID} && set AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY} && terraform init"
-                        }
+                script {
+                    // Navigate to the Backend/terraform directory
+                    dir('Backend/terraform') {
+                        sh 'terraform init'
+                    }
+                }
+            }
+        }
+
+        stage('Terraform Import Key Pair') {
+            steps {
+                script {
+                    dir('Backend/terraform') {
+                        sh 'terraform import aws_key_pair.key_pair my-terraform-key'  // Import the existing key pair
+                    }
+                }
+            }
+        }
+
+        stage('Terraform Import EC2 Instance') {
+            steps {
+                script {
+                    dir('Backend/terraform') {
+                        sh 'terraform import aws_instance.my_instance i-0abc1234d567890ef'  // Import the existing EC2 instance
                     }
                 }
             }
@@ -244,12 +263,9 @@ pipeline {
 
         stage('Terraform Plan') {
             steps {
-                withCredentials([string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
-                                 string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    withEnv([ "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}", "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" ]) {
-                        dir('backend/terraform') {
-                            bat 'terraform plan -out=tfplan'
-                        }
+                script {
+                    dir('Backend/terraform') {
+                        sh 'terraform plan -out=tfplan'
                     }
                 }
             }
@@ -257,12 +273,9 @@ pipeline {
 
         stage('Terraform Apply') {
             steps {
-                withCredentials([string(credentialsId: 'aws-access-key-id', variable: 'AWS_ACCESS_KEY_ID'),
-                                 string(credentialsId: 'aws-secret-access-key', variable: 'AWS_SECRET_ACCESS_KEY')]) {
-                    withEnv([ "AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}", "AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}" ]) {
-                        dir('backend/terraform') {
-                            bat 'terraform apply -auto-approve tfplan'
-                        }
+                script {
+                    dir('Backend/terraform') {
+                        sh 'terraform apply -auto-approve tfplan'
                     }
                 }
             }
@@ -280,11 +293,10 @@ pipeline {
 
     post {
         always {
-            bat 'docker logout'
-            echo "Logged out from Docker Hub."
+            echo 'Terraform process completed.'
         }
         failure {
-            echo "Pipeline failed. Check logs."
+            echo 'Pipeline failed. Check the logs for errors.'
         }
     }
 }
