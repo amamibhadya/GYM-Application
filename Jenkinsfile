@@ -28,15 +28,6 @@ pipeline {
             }
         }
 
-        stage('Debug Variables') {
-            steps {
-                bat '''
-                echo Build Tag: ${BUILD_TAG}
-                echo Docker Username: ${DOCKER_USERNAME}
-                '''
-            }
-        }
-
         stage('Build Backend Docker Image') {
             steps {
                 bat "docker build -t ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} ./backend"
@@ -51,61 +42,34 @@ pipeline {
 
         stage('Pull MongoDB Image') {
             steps {
-                script {
-                    bat "docker pull mongo:6.0"
-                    bat "docker tag mongo:6.0 ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}"
-                }
-            }
-        }
-
-        stage('List Docker Images') {
-            steps {
-                bat 'docker images'
+                bat "docker pull mongo:6.0"
+                bat "docker tag mongo:6.0 ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}"
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([string(credentialsId: 'gym', variable: 'DOCKER_PASSWORD')]) {
-                    script {
-                        bat "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
-                    }
-                }
-            }
-        }
-
-        stage('Verify Backend Image Before Push') {
-            steps {
-                script {
-                    def exists = bat(script: "docker images -q ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG}", returnStdout: true).trim()
-                    if (!exists) {
-                        error "Backend image ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} does not exist. Build failed!"
-                    }
+                    bat "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
                 }
             }
         }
 
         stage('Push Docker Images') {
             parallel {
-                stage('Push Frontend Image') {
+                stage('Push Frontend') {
                     steps {
-                        script {
-                            bat "docker push ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG}"
-                        }
+                        bat "docker push ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG}"
                     }
                 }
-                stage('Push Backend Image') {
+                stage('Push Backend') {
                     steps {
-                        script {
-                            bat "docker push ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG}"
-                        }
+                        bat "docker push ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG}"
                     }
                 }
-                stage('Push MongoDB Image') {
+                stage('Push MongoDB') {
                     steps {
-                        script {
-                            bat "docker push ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}"
-                        }
+                        bat "docker push ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}"
                     }
                 }
             }
@@ -113,10 +77,7 @@ pipeline {
 
         stage('Deploy to EC2 using Ansible') {
             steps {
-                script {
-                    // Trigger the Ansible Playbook to deploy the Docker containers on EC2
-                    sh 'ansible-playbook -i inventory.ini deploy.yml'
-                }
+                sh "ansible-playbook -i inventory.ini deploy.yml --extra-vars 'tag=${BUILD_TAG}'"
             }
         }
     }
@@ -125,7 +86,6 @@ pipeline {
         always {
             bat 'docker logout'
             echo "Logged out from Docker Hub."
-            bat 'docker-compose down -v || true'
         }
         failure {
             echo "Pipeline failed. Check logs."
