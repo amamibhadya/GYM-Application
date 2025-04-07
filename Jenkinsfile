@@ -233,14 +233,11 @@ pipeline {
             }
         }
 
-
         stage('Terraform Init') {
             steps {
                 script {
-                    // Navigate to the Backend/terraform directory
-                    dir('Backend/terraform') {
-                        sh 'terraform init'
-                    }
+                    // Run Terraform Init inside WSL
+                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform init /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform"""
                 }
             }
         }
@@ -248,9 +245,8 @@ pipeline {
         stage('Terraform Import Key Pair') {
             steps {
                 script {
-                    dir('Backend/terraform') {
-                        sh 'terraform import aws_key_pair.key_pair my-terraform-key'  // Import the existing key pair
-                    }
+                    // Import Key Pair inside WSL
+                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform import aws_key_pair.key_pair my-terraform-key /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform"""
                 }
             }
         }
@@ -258,9 +254,8 @@ pipeline {
         stage('Terraform Import EC2 Instance') {
             steps {
                 script {
-                    dir('Backend/terraform') {
-                        sh 'terraform import aws_instance.my_instance i-0abc1234d567890ef'  // Import the existing EC2 instance
-                    }
+                    // Import EC2 Instance inside WSL
+                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform import aws_instance.my_instance i-0abc1234d567890ef /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform"""
                 }
             }
         }
@@ -268,9 +263,8 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 script {
-                    dir('Backend/terraform') {
-                        sh 'terraform plan -out=tfplan'
-                    }
+                    // Run Terraform Plan inside WSL
+                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform plan -out=tfplan /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform"""
                 }
             }
         }
@@ -278,9 +272,8 @@ pipeline {
         stage('Terraform Apply') {
             steps {
                 script {
-                    dir('Backend/terraform') {
-                        sh 'terraform apply -auto-approve tfplan'
-                    }
+                    // Run Terraform Apply inside WSL
+                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform apply -auto-approve tfplan /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform"""
                 }
             }
         }
