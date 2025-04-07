@@ -253,7 +253,9 @@ pipeline {
         stage('Terraform Import EC2 Instance') {
             steps {
                 script {
-                    bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_instance.my_instance i-0abc1234d567890ef'
+                    bat """C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_instance.my_instance i-0a34d3b8b0ba68455"""
+
+                    //bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_instance.my_instance i-0abc1234d567890ef'
                 }
             }
         }
