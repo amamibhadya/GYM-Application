@@ -388,7 +388,12 @@ pipeline {
 
         stage('Terraform Import Key Pair') {
             steps {
-                bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_key_pair.key_pair my-terraform-key'
+                
+                bat '''
+                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_key_pair.key_pair my-terraform-key -var "aws_access_key=${AWS_ACCESS_KEY_ID}" -var "aws_secret_key=${AWS_SECRET_ACCESS_KEY}"
+                '''
+
+                //bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_key_pair.key_pair my-terraform-key'
             }
         }
 
