@@ -665,9 +665,9 @@ pipeline {
 
         stage('Terraform Import Key Pair') {
             steps {
-                bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_key_pair.key_pair my-terraform-key
-                '''
+                script {
+                    bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_key_pair.key_pair my-terraform-key'
+                }
             }
         }
 
