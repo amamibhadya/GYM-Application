@@ -1,5 +1,7 @@
 provider "aws" {
-  region = "eu-north-1"
+  region     = "eu-north-1"
+  access_key = var.aws_access_key
+  secret_key = var.aws_secret_key
 }
 
 resource "tls_private_key" "key_pair" {
@@ -13,39 +15,54 @@ resource "aws_key_pair" "key_pair" {
 }
 
 resource "aws_security_group" "allow_ssh" {
-  # ... existing code ...
+  name        = "allow_ssh_http_ports"
+  description = "Allow SSH, HTTP, HTTPS, frontend and backend access"
 
   ingress {
-    from_port   = 80    # HTTP
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 80
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 443   # HTTPS
+    from_port   = 443
     to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 5173  # Frontend port
+    from_port   = 5173
     to_port     = 5173
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
-    from_port   = 3001  # Backend port
+    from_port   = 3001
     to_port     = 3001
     protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
 
 resource "aws_instance" "my_instance" {
-  ami           = "ami-0274f4b62b6ae3bd5"
+  ami           = "ami-0274f4b62b6ae3bd5" # Use appropriate AMI for your region
   instance_type = "t3.micro"
 
   key_name        = aws_key_pair.key_pair.key_name
@@ -54,4 +71,15 @@ resource "aws_instance" "my_instance" {
   tags = {
     Name = "MyEC2Instance"
   }
+}
+
+output "ec2_public_ip" {
+  description = "Public IP of the created EC2 instance"
+  value       = aws_instance.my_instance.public_ip
+}
+
+output "private_key_pem" {
+  description = "Private key to SSH into the instance"
+  value       = tls_private_key.key_pair.private_key_pem
+  sensitive   = true
 }
