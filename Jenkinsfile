@@ -515,41 +515,72 @@ pipeline {
         //         bat "wsl -u uresha terraform -chdir=${TERRAFORM_DIR} state rm aws_key_pair.key_pair || exit 0"
         //     }
         // }
+        // stage('Terraform Init') {
+        //     steps {
+        //         bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform init'
+        //         bat 'C:\\Windows\\System32\\wsl -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform state rm aws_key_pair.key_pair'
+        //     }
+        // }
+
+        // stage('Terraform Import Key Pair') {
+        //     steps {
+        //         bat "wsl -u uresha terraform -chdir=${TERRAFORM_DIR} import aws_key_pair.key_pair my-terraform-key"
+        //     }
+        // }
+
+        // stage('Terraform Plan') {
+        //     steps {
+        //         bat """
+        //             wsl -u uresha terraform -chdir=${TERRAFORM_DIR} plan \
+        //             -var 'aws_access_key=${AWS_ACCESS_KEY_ID}' \
+        //             -var 'aws_secret_key=${AWS_SECRET_ACCESS_KEY}' \
+        //             -out=tfplan
+        //         """
+        //         bat "wsl -u uresha terraform -chdir=${TERRAFORM_DIR} show"
+        //     }
+        // }
+
+        // stage('Terraform Apply') {
+        //     steps {
+        //         bat """
+        //             wsl -u uresha terraform -chdir=${TERRAFORM_DIR} apply \
+        //             -var 'aws_access_key=${AWS_ACCESS_KEY_ID}' \
+        //             -var 'aws_secret_key=${AWS_SECRET_ACCESS_KEY}' \
+        //             -auto-approve tfplan
+        //         """
+        //     }
+        // }
+
         stage('Terraform Init') {
             steps {
-                bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform init'
-                bat 'C:\\Windows\\System32\\wsl -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform state rm aws_key_pair.key_pair'
+                bat "terraform -chdir=${TERRAFORM_DIR} init"
+                bat "terraform -chdir=${TERRAFORM_DIR} state rm aws_key_pair.key_pair || exit 0"
             }
-        }
+            }
 
-        stage('Terraform Import Key Pair') {
+            stage('Terraform Import Key Pair') {
             steps {
-                bat "wsl -u uresha terraform -chdir=${TERRAFORM_DIR} import aws_key_pair.key_pair my-terraform-key"
+                bat "terraform -chdir=${TERRAFORM_DIR} import aws_key_pair.key_pair my-terraform-key"
             }
-        }
+            }
 
-        stage('Terraform Plan') {
+            stage('Terraform Plan') {
             steps {
                 bat """
-                    wsl -u uresha terraform -chdir=${TERRAFORM_DIR} plan \
-                    -var 'aws_access_key=${AWS_ACCESS_KEY_ID}' \
-                    -var 'aws_secret_key=${AWS_SECRET_ACCESS_KEY}' \
+                terraform -chdir=${TERRAFORM_DIR} plan \
+                    -var "aws_access_key=${AWS_ACCESS_KEY_ID}" \
+                    -var "aws_secret_key=${AWS_SECRET_ACCESS_KEY}" \
                     -out=tfplan
                 """
-                bat "wsl -u uresha terraform -chdir=${TERRAFORM_DIR} show"
+                bat "terraform -chdir=${TERRAFORM_DIR} show"
             }
-        }
+            }
 
-        stage('Terraform Apply') {
+            stage('Terraform Apply') {
             steps {
-                bat """
-                    wsl -u uresha terraform -chdir=${TERRAFORM_DIR} apply \
-                    -var 'aws_access_key=${AWS_ACCESS_KEY_ID}' \
-                    -var 'aws_secret_key=${AWS_SECRET_ACCESS_KEY}' \
-                    -auto-approve tfplan
-                """
+                bat "terraform -chdir=${TERRAFORM_DIR} apply -auto-approve tfplan"
             }
-        }
+            }
 
         stage('Deploy to EC2 using Ansible') {
             steps {
