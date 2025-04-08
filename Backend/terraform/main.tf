@@ -13,20 +13,33 @@ resource "aws_key_pair" "key_pair" {
 }
 
 resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh"
-  description = "Allow SSH access"
+  # ... existing code ...
 
   ingress {
-    from_port   = 22
-    to_port     = 22
+    from_port   = 80    # HTTP
+    to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 
-  egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"
+  ingress {
+    from_port   = 443   # HTTPS
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 5173  # Frontend port
+    to_port     = 5173
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 3001  # Backend port
+    to_port     = 3001
+    protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
 }
