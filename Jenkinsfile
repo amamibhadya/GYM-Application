@@ -663,13 +663,13 @@ pipeline {
             }
         }
 
-        stage('Terraform Import Key Pair') {
-            steps {
-                script {
-                    bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_key_pair.key_pair my-terraform-key'
-                }
-            }
-        }
+        // stage('Terraform Import Key Pair') {
+        //     steps {
+        //         script {
+        //             bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_key_pair.key_pair my-terraform-key'
+        //         }
+        //     }
+        // }
 
 
         // stage('Terraform Import Key Pair') {
@@ -687,14 +687,14 @@ pipeline {
         //     }
         // }
 
-        stage('Terraform Plan') {
-            steps {
-                bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform plan -out=tfplan
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform show
-                '''
-            }
-        }
+        // stage('Terraform Plan') {
+        //     steps {
+        //         bat '''
+        //             C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform plan -out=tfplan
+        //             C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform show
+        //         '''
+        //     }
+        // }
 
         stage('Terraform Apply') {
             steps {
