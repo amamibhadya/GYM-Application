@@ -390,11 +390,11 @@ pipeline {
             }
         }
 
-        stage('Terraform Import Security Group') {
-            steps {
-                bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_security_group.allow_ssh sg-06d24b01d8b0fb022'
-            }
-        }
+        // stage('Terraform Import Security Group') {
+        //     steps {
+        //         bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_security_group.allow_ssh sg-06d24b01d8b0fb022'
+        //     }
+        // }
 
         stage('Terraform Plan') {
             steps {
