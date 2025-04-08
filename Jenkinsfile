@@ -509,10 +509,16 @@ pipeline {
             }
         }
 
+        // stage('Terraform Init') {
+        //     steps {
+        //         bat "wsl -u uresha terraform -chdir=${TERRAFORM_DIR} init"
+        //         bat "wsl -u uresha terraform -chdir=${TERRAFORM_DIR} state rm aws_key_pair.key_pair || exit 0"
+        //     }
+        // }
         stage('Terraform Init') {
             steps {
-                bat "wsl -u uresha terraform -chdir=${TERRAFORM_DIR} init"
-                bat "wsl -u uresha terraform -chdir=${TERRAFORM_DIR} state rm aws_key_pair.key_pair || exit 0"
+                bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform init'
+                bat 'C:\\Windows\\System32\\wsl -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform state rm aws_key_pair.key_pair'
             }
         }
 
