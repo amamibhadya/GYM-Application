@@ -687,14 +687,14 @@ pipeline {
         //     }
         // }
 
-        // stage('Terraform Plan') {
-        //     steps {
-        //         bat '''
-        //             C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform plan -out=tfplan
-        //             C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform show
-        //         '''
-        //     }
-        // }
+        stage('Terraform Plan') {
+            steps {
+                bat '''
+                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform plan -out=tfplan
+                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform show
+                '''
+            }
+        }
 
         stage('Terraform Apply') {
             steps {
