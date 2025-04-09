@@ -8,12 +8,12 @@ resource "tls_private_key" "key_pair" {
 }
 
 resource "aws_key_pair" "key_pair" {
-  key_name   = "my-terraform-key"
+  key_name   = "my-unique-terraform-key"  # Changed key name to avoid conflict
   public_key = tls_private_key.key_pair.public_key_openssh
 }
 
 resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh_http_ports"
+  name        = "allow_ssh_http_ports_v2"  # Changed security group name to avoid conflict
   description = "Allow SSH, HTTP, HTTPS, frontend and backend access"
 
   ingress {
