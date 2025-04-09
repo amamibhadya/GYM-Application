@@ -23,7 +23,7 @@ app.use(
 );
 
 const corsOptions = {
-  origin: 'http://13.48.148.7',  // Frontend URL
+  origin: '*',  // Frontend URL
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
   credentials: true,  // Allow credentials to be sent
