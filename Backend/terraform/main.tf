@@ -64,7 +64,7 @@ resource "aws_security_group" "allow_ssh" {
 }
 
 resource "aws_instance" "my_instance" {
-  ami           = "ami-0274f4b62b6ae3bd5" # Use appropriate AMI for your region
+  ami           = "ami-0274f4b62b6ae3bd5"  # Use appropriate AMI for your region
   instance_type = "t3.micro"
 
   key_name        = aws_key_pair.key_pair.key_name
@@ -73,6 +73,16 @@ resource "aws_instance" "my_instance" {
   tags = {
     Name = "MyEC2Instance"
   }
+
+  # Add user_data to install Docker on the EC2 instance
+  user_data = <<-EOF
+              #!/bin/bash
+              yum update -y
+              amazon-linux-extras install docker -y
+              systemctl enable docker
+              systemctl start docker
+              usermod -aG docker ec2-user
+              EOF
 }
 
 output "ec2_public_ip" {
