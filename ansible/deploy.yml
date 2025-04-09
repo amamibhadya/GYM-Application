@@ -160,8 +160,6 @@
 #         env:
 #           VITE_API_URL: "http://localhost:3001"
 
-
-
 - name: Deploy Docker Containers on EC2
   hosts: webserver
   become: true
@@ -187,7 +185,7 @@
         state: present
 
     - name: Enable and start Docker service
-      service:
+      systemd:
         name: docker
         state: started
         enabled: yes
@@ -220,7 +218,7 @@
         ports:
           - "27017:27017"
         volumes:
-          - mongo_data:/data/db
+          - mongo_data:/data/db  # Make sure this volume is declared or managed
 
     - name: Wait for MongoDB
       wait_for:
