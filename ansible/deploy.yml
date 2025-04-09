@@ -169,26 +169,23 @@
     mongo_image: "uresha2001/mongo:{{ tag }}"
 
   tasks:
-    - name: Ensure Docker is installed
-      dnf:
-        name: docker
+    - name: Install required system packages
+      yum:
+        name:
+          - docker
+          - python3-pip
         state: present
-
-    - name: Install pip3
-      dnf:
-        name: python3-pip
-        state: present
+      notify: Start Docker
 
     - name: Install Python Docker SDK
       pip:
         name: docker
         state: present
 
-    - name: Enable and start Docker service
-      systemd:
-        name: docker
-        state: started
-        enabled: yes
+    - name: Ensure Docker volume exists
+      docker_volume:
+        name: mongo_data
+        state: present
 
     - name: Pull Docker images
       docker_image:
@@ -218,13 +215,13 @@
         ports:
           - "27017:27017"
         volumes:
-          - mongo_data:/data/db  # Make sure this volume is declared or managed
+          - mongo_data:/data/db
 
     - name: Wait for MongoDB
       wait_for:
         port: 27017
         delay: 10
-        timeout: 30
+        timeout: 60
 
     - name: Start backend container
       docker_container:
@@ -237,6 +234,8 @@
         env:
           MONGO_URI: "mongodb://mongo_container:27017/gymdb"
           PORT: 3001
+        links:
+          - mongo_container
 
     - name: Start frontend container
       docker_container:
@@ -247,4 +246,11 @@
         ports:
           - "80:5173"
         env:
-          VITE_API_URL: "http://localhost:3001"
+          VITE_API_URL: "http://backend_container:3001"
+
+  handlers:
+    - name: Start Docker
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
