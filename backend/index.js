@@ -1,4 +1,5 @@
 const express = require("express");
+const helmet = require('helmet');
 const mongoose = require("mongoose");
 const cors = require("cors");
 const bcrypt = require("bcrypt");
@@ -10,7 +11,14 @@ const sendEmail = require("./utils/sendEmail");
 
 dotenv.config();
 const app = express();
+app.use(helmet());
 
+app.use(helmet.contentSecurityPolicy({
+  directives: {
+      defaultSrc: ["'self'"],
+      scriptSrc: ["'self'", "'unsafe-eval'"],
+  },
+}));
 const corsOptions = {
   origin: 'http://13.48.148.7',  // Frontend URL
   methods: ['GET', 'POST'],
