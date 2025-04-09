@@ -28,7 +28,7 @@ function Signup() {
     
         try {
             console.log("Sending request to backend...");
-            const result = await axios.post("http://http://13.48.148.7:3001/signup", { email, password });
+            const result = await axios.post("http://13.48.148.7:3001/signup", { email, password });
     
             console.log("Response received:", result);
     
