@@ -13,12 +13,14 @@ dotenv.config();
 const app = express();
 app.use(helmet());
 
-app.use(helmet.contentSecurityPolicy({
-  directives: {
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'"],  // Remove 'unsafe-eval' if not necessary
-  },
-}));
+      scriptSrc: ["'self'", "'unsafe-eval'"], // ⚠️ opens up security vulnerabilities
+    },
+  })
+);
 
 const corsOptions = {
   origin: 'http://13.48.148.7',  // Frontend URL
