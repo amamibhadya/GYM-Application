@@ -34,12 +34,11 @@ app.use(cors(corsOptions));
 
 
 app.use(express.json());
-
 // MongoDB connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => {
     console.log("Connected to MongoDB");
-    app.listen(process.env.PORT, () => {
+    app.listen(process.env.PORT, '0.0.0.0', () => {
       console.log(`Server is running on port ${process.env.PORT}`);
     });
   })
