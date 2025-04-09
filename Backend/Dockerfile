@@ -8,8 +8,7 @@ RUN npm install -g nodemon
 WORKDIR /gymapp
 
 # Copy package.json and package-lock.json separately (better caching)
-COPY package.json package-lock.json ./
-
+COPY package.json .
 
 # Install dependencies
 RUN npm install
