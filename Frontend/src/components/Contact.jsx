@@ -14,7 +14,7 @@ const Contact = () => {
     setLoading(true);
     try {
       const response = await axios.post(
-        "http://localhost:3001/send/mail",
+        "http://13.48.148.7:3001/send/mail",
         {
           name,
           email,
