@@ -16,9 +16,10 @@ app.use(helmet());
 app.use(helmet.contentSecurityPolicy({
   directives: {
       defaultSrc: ["'self'"],
-      scriptSrc: ["'self'", "'unsafe-eval'"],
+      scriptSrc: ["'self'"],  // Remove 'unsafe-eval' if not necessary
   },
 }));
+
 const corsOptions = {
   origin: 'http://13.48.148.7',  // Frontend URL
   methods: ['GET', 'POST'],
