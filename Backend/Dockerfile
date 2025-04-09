@@ -7,8 +7,8 @@ RUN npm install -g nodemon
 # Set the working directory
 WORKDIR /gymapp
 
-# Copy package.json and package-lock.json
-COPY package.json package-lock.json 
+# Copy package.json and package-lock.json separately (better caching)
+COPY package.json .
 
 # Install dependencies
 RUN npm install
@@ -20,4 +20,4 @@ COPY . .
 EXPOSE 3001
 
 # Start the application using nodemon
-CMD ["npx", "nodemon", "-L", "index.js"]  # Use npx for nodemon
+CMD ["nodemon", "-L", "index.js"]
