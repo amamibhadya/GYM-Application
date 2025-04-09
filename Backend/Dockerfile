@@ -1,5 +1,5 @@
 # Use Node.js version 20
-FROM node:23.11.0
+FROM node:20.14.0
 
 # Install nodemon globally
 RUN npm install -g nodemon
