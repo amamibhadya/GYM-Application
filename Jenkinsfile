@@ -707,8 +707,11 @@ pipeline {
         stage('Deploy to EC2 using Ansible') {
             steps {
                 bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha ansible-playbook /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml
+                    C:\\Windows\\System32\\wsl.exe -u uresha ansible-playbook /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml -e "tag=${BUILD_TAG}"
                 '''
+
+                    //C:\\Windows\\System32\\wsl.exe -u uresha ansible-playbook /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml
+                
             }
         }
     }
