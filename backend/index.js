@@ -12,7 +12,7 @@ dotenv.config();
 const app = express();
 
 const corsOptions = {
-  origin: 'http://localhost:5173',  // Frontend URL
+  origin: 'http://13.48.148.7',  // Frontend URL
   methods: ['GET', 'POST'],
   allowedHeaders: ['Content-Type'],
   credentials: true,  // Allow credentials to be sent
