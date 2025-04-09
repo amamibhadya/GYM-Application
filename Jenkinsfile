@@ -686,10 +686,11 @@ pipeline {
         stage('Deploy to EC2 via SSH') {
             steps {
                 bat """
-                C:\\Windows\\System32\\wsl.exe -u uresha ssh -i /home/uresha/my-terraform-key.pem -o StrictHostKeyChecking=no ec2-user@13.60.46.53 "docker pull ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG} && docker pull ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} && docker pull ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG} && docker stop mongo_container backend_container frontend_container || true && docker rm mongo_container backend_container frontend_container || true && docker run -d --name mongo_container -p 27017:27017 ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG} && docker run -d --name backend_container -p 3001:3001 -e MONGO_URI='mongodb://mongo_container:27017/gymdb' ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} && docker run -d --name frontend_container -p 80:5173 -e VITE_API_URL='http://localhost:3001' ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG}"
+                C:\\Windows\\System32\\wsl.exe -u uresha ssh -i /home/uresha/my-terraform-key.pem -o StrictHostKeyChecking=no ec2-user@13.48.148.7 "docker pull ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG} && docker pull ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} && docker pull ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG} && docker stop mongo_container backend_container frontend_container || true && docker rm mongo_container backend_container frontend_container || true && docker run -d --name mongo_container -p 27017:27017 ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG} && docker run -d --name backend_container -p 3001:3001 -e MONGO_URI='mongodb://mongo_container:27017/gymdb' ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} && docker run -d --name frontend_container -p 80:5173 -e VITE_API_URL='http://localhost:3001' ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG}"
                 """
             }
         }
+
 
     }
 
