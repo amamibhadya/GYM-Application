@@ -575,6 +575,9 @@
 //     }
 // }
 
+// 
+
+
 pipeline {
     agent any
 
@@ -663,30 +666,6 @@ pipeline {
             }
         }
 
-        // stage('Terraform Import Key Pair') {
-        //     steps {
-        //         script {
-        //             bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_key_pair.key_pair my-terraform-key'
-        //         }
-        //     }
-        // }
-
-
-        // stage('Terraform Import Key Pair') {
-        //     steps {
-        //         bat '''
-        //             C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_key_pair.key_pair my-terraform-key \
-        //             -var "aws_access_key=${AWS_ACCESS_KEY_ID}" -var "aws_secret_key=${AWS_SECRET_ACCESS_KEY}"
-        //         '''
-        //     }
-        // }
-
-        // stage('Terraform Import Security Group') {
-        //     steps {
-        //         bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform import aws_security_group.allow_ssh sg-06d24b01d8b0fb022'
-        //     }
-        // }
-
         stage('Terraform Plan') {
             steps {
                 bat '''
@@ -704,25 +683,31 @@ pipeline {
             }
         }
 
-        stage('Deploy to EC2 using Ansible') {
+        stage('Deploy to EC2 via SSH') {
             steps {
                 bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha ansible-playbook /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml -e "tag=${BUILD_TAG}"
+                    C:\\Windows\\System32\\wsl.exe -u uresha ssh -o StrictHostKeyChecking=no ec2-user@13.60.46.53 << 'EOF'
+                    docker pull ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}
+                    docker pull ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG}
+                    docker pull ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG}
+                    docker stop mongo_container backend_container frontend_container || true
+                    docker rm mongo_container backend_container frontend_container || true
+                    docker run -d --name mongo_container -p 27017:27017 ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}
+                    docker run -d --name backend_container -p 3001:3001 -e MONGO_URI="mongodb://mongo_container:27017/gymdb" ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG}
+                    docker run -d --name frontend_container -p 80:5173 -e VITE_API_URL="http://localhost:3001" ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG}
+                    exit
+                    EOF
                 '''
-
-                    //C:\\Windows\\System32\\wsl.exe -u uresha ansible-playbook /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml
-                
             }
         }
     }
 
     post {
         always {
-            echo 'Terraform process completed.'
+            echo 'Deployment process completed.'
         }
         failure {
             echo 'Pipeline failed. Check the logs for errors.'
         }
     }
 }
-
