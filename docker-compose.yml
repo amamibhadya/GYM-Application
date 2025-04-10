@@ -37,47 +37,6 @@
 
 
 
-# services:
-#   mongo:
-#     image: mongo
-#     container_name: mongo_container
-#     volumes:
-#       - mongo_data:/data/db
-#     ports:
-#       - "27017:27017"
-
-#   backend:
-#     build: ./backend  # Changed to lowercase
-#     container_name: backend_container
-#     ports:
-#       - "3001:3001"
-#     depends_on:
-#       - mongo
-#     volumes:
-#       - ./backend:/gymapp
-#       - /gymapp/node_modules
-#     environment:
-#       - MONGO_URI=mongodb+srv://admin:fvA2r4pRgmplefPj@cluster0.3dhst.mongodb.net/userCredentials
-
-#   frontend:
-#     build: ./frontend  # Changed to lowercase
-#     container_name: frontend_container
-#     ports:
-#       - "5173:5173"
-#     depends_on:
-#       - backend
-#     stdin_open: true
-#     tty: true
-#     volumes:
-#       - ./frontend:/gymapp
-#       - /gymapp/node_modules
-
-# volumes:
-#   mongo_data:
-
-
-version: '3.8'
-
 services:
   mongo:
     image: mongo
@@ -88,23 +47,20 @@ services:
       - "27017:27017"
 
   backend:
-    build: ./backend
+    build: ./backend  # Changed to lowercase
     container_name: backend_container
     ports:
       - "3001:3001"
     depends_on:
       - mongo
     volumes:
-      - ./backend:/app
-      - /app/node_modules
+      - ./backend:/gymapp
+      - /gymapp/node_modules
     environment:
       - MONGO_URI=mongodb+srv://admin:fvA2r4pRgmplefPj@cluster0.3dhst.mongodb.net/userCredentials
-    working_dir: /app
-    command: npm start
-    network_mode: "host"  # Use host networking for direct public IP access
 
   frontend:
-    build: ./frontend
+    build: ./frontend  # Changed to lowercase
     container_name: frontend_container
     ports:
       - "5173:5173"
@@ -113,11 +69,55 @@ services:
     stdin_open: true
     tty: true
     volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    working_dir: /app
-    command: npm run dev -- --host 0.0.0.0  # Important for Vite to bind to all interfaces
-    network_mode: "host"  # Allow access via public IP
+      - ./frontend:/gymapp
+      - /gymapp/node_modules
 
 volumes:
   mongo_data:
+
+
+# version: '3.8'
+
+# services:
+#   mongo:
+#     image: mongo
+#     container_name: mongo_container
+#     volumes:
+#       - mongo_data:/data/db
+#     ports:
+#       - "27017:27017"
+
+#   backend:
+#     build: ./backend
+#     container_name: backend_container
+#     ports:
+#       - "3001:3001"
+#     depends_on:
+#       - mongo
+#     volumes:
+#       - ./backend:/app
+#       - /app/node_modules
+#     environment:
+#       - MONGO_URI=mongodb+srv://admin:fvA2r4pRgmplefPj@cluster0.3dhst.mongodb.net/userCredentials
+#     working_dir: /app
+#     command: npm start
+#     network_mode: "host"  # Use host networking for direct public IP access
+
+#   frontend:
+#     build: ./frontend
+#     container_name: frontend_container
+#     ports:
+#       - "5173:5173"
+#     depends_on:
+#       - backend
+#     stdin_open: true
+#     tty: true
+#     volumes:
+#       - ./frontend:/app
+#       - /app/node_modules
+#     working_dir: /app
+#     command: npm run dev -- --host 0.0.0.0  # Important for Vite to bind to all interfaces
+#     network_mode: "host"  # Allow access via public IP
+
+# volumes:
+#   mongo_data:
