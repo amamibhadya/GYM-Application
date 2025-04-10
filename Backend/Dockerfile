@@ -26,11 +26,13 @@
 # Use Node.js image
 FROM node:20.14.0
 
+# Install nodemon globally
+RUN npm install -g nodemon
+
 # Set working directory
 WORKDIR /gymapp
 
-# Install nodemon globally
-RUN npm install -g nodemon
+
 
 # Copy only package.json to install dependencies
 COPY package.json ./
