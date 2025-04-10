@@ -6,7 +6,7 @@ function Hero() {
     <section className='hero flex justify-center items-center h-screen bg-gray-800'>
         <div className='content text-center text-white'>
             <div className='title mb-8'>
-                <h1 className='text-6xl font-bold'>LET</h1>
+                <h1 className='text-6xl font-bold'>L</h1>
                 <h1 className='text-6xl font-bold'>GET</h1>
                 <h1 className='text-6xl font-bold'>MOVING</h1>
             </div>
