@@ -1,175 +1,15 @@
-# - name: Deploy Docker Containers on EC2
-#   hosts: webserver
-#   become: true
-#   vars:
-#     frontend_image: "uresha2001/frontend:{{ tag }}"
-#     backend_image: "uresha2001/backend:{{ tag }}"
-#     mongo_image: "uresha2001/mongo:{{ tag }}"
-
-#   tasks:
-#     - name: Ensure Docker is installed
-#       apt:
-#         name: docker.io
-#         state: present
-#         update_cache: true
-
-#     - name: Install Python Docker SDK
-#       pip:
-#         name: docker
-#         state: present
-
-#     - name: Pull Docker images
-#       docker_image:
-#         name: "{{ item }}"
-#         source: pull
-#       loop:
-#         - "{{ frontend_image }}"
-#         - "{{ backend_image }}"
-#         - "{{ mongo_image }}"
-
-#     - name: Stop and remove existing containers
-#       docker_container:
-#         name: "{{ item }}"
-#         state: absent
-#         force_kill: true
-#       loop:
-#         - frontend_container
-#         - backend_container
-#         - mongo_container
-
-#     # - name: Start MongoDB container
-#   docker_container:
-#     name: mongo_container
-#     image: "{{ mongo_image }}"
-#     state: started
-#     restart_policy: always
-#     ports:
-#       - "27017:27017"
-#     volumes:
-#       - mongo_data:/data/db
-
-# - name: Wait for MongoDB
-#   wait_for:
-#     port: 27017
-#     delay: 10
-
-# - name: Start backend container
-#   docker_container:
-#     name: backend_container
-#     image: "{{ backend_image }}"
-#     state: started
-#     restart_policy: always
-#     ports:
-#       - "3001:3001"
-#     environment:
-#       MONGO_URI: "mongodb://mongo_container:27017/gymdb"
-#       PORT: 3001
-
-# - name: Start frontend container
-#   docker_container:
-#     name: frontend_container
-#     image: "{{ frontend_image }}"
-#     state: started
-#     restart_policy: always
-#     ports:
-#       - "80:5173"  # Map port 80 to container's 5173
-#     environment:
-#       VITE_API_URL: "http://localhost:3001"  # Or your backend public IP
-
-# - name: Deploy Docker Containers on EC2
-#   hosts: webserver
-#   become: true
-#   vars:
-#     frontend_image: "uresha2001/frontend:{{ tag }}"
-#     backend_image: "uresha2001/backend:{{ tag }}"
-#     mongo_image: "uresha2001/mongo:{{ tag }}"
-
-#   tasks:
-#     - name: Ensure Docker is installed
-#       apt:
-#         name: docker.io
-#         state: present
-#         update_cache: true
-
-#     - name: Install pip3
-#       apt:
-#         name: python3-pip
-#         state: present
-
-#     - name: Install Python Docker SDK
-#       pip:
-#         name: docker
-#         state: present
-
-#     - name: Pull Docker images
-#       docker_image:
-#         name: "{{ item }}"
-#         source: pull
-#       loop:
-#         - "{{ frontend_image }}"
-#         - "{{ backend_image }}"
-#         - "{{ mongo_image }}"
-
-#     - name: Stop and remove existing containers
-#       docker_container:
-#         name: "{{ item }}"
-#         state: absent
-#         force_kill: true
-#       loop:
-#         - frontend_container
-#         - backend_container
-#         - mongo_container
-
-#     - name: Start MongoDB container
-#       docker_container:
-#         name: mongo_container
-#         image: "{{ mongo_image }}"
-#         state: started
-#         restart_policy: always
-#         ports:
-#           - "27017:27017"
-#         volumes:
-#           - mongo_data:/data/db
-
-#     - name: Wait for MongoDB
-#       wait_for:
-#         port: 27017
-#         delay: 10
-#         timeout: 30
-
-#     - name: Start backend container
-#       docker_container:
-#         name: backend_container
-#         image: "{{ backend_image }}"
-#         state: started
-#         restart_policy: always
-#         ports:
-#           - "3001:3001"
-#         env:
-#           MONGO_URI: "mongodb://mongo_container:27017/gymdb"
-#           PORT: 3001
-
-#     - name: Start frontend container
-#       docker_container:
-#         name: frontend_container
-#         image: "{{ frontend_image }}"
-#         state: started
-#         restart_policy: always
-#         ports:
-#           - "80:5173"
-#         env:
-#           VITE_API_URL: "http://localhost:3001"
-
 - name: Deploy Docker Containers on EC2
   hosts: webserver
   become: true
   vars:
+    tag: "latest"  # Default tag (override with --extra-vars if needed)
     frontend_image: "uresha2001/frontend:{{ tag }}"
     backend_image: "uresha2001/backend:{{ tag }}"
     mongo_image: "uresha2001/mongo:{{ tag }}"
+    docker_network: "app_network"
 
   tasks:
-    - name: Install required system packages
+    - name: Install required system packages (Docker, pip)
       yum:
         name:
           - docker
@@ -177,14 +17,25 @@
         state: present
       notify: Start Docker
 
+    - name: Ensure Docker is running before continuing
+      systemd:
+        name: docker
+        state: started
+        enabled: yes
+
     - name: Install Python Docker SDK
       pip:
         name: docker
         state: present
 
-    - name: Ensure Docker volume exists
+    - name: Create Docker volume for MongoDB
       docker_volume:
         name: mongo_data
+        state: present
+
+    - name: Create user-defined Docker network
+      docker_network:
+        name: "{{ docker_network }}"
         state: present
 
     - name: Pull Docker images
@@ -216,8 +67,10 @@
           - "27017:27017"
         volumes:
           - mongo_data:/data/db
+        networks:
+          - name: "{{ docker_network }}"
 
-    - name: Wait for MongoDB
+    - name: Wait for MongoDB to be ready
       wait_for:
         port: 27017
         delay: 10
@@ -234,8 +87,8 @@
         env:
           MONGO_URI: "mongodb://mongo_container:27017/gymdb"
           PORT: 3001
-        links:
-          - mongo_container
+        networks:
+          - name: "{{ docker_network }}"
 
     - name: Start frontend container
       docker_container:
@@ -247,6 +100,8 @@
           - "80:5173"
         env:
           VITE_API_URL: "http://backend_container:3001"
+        networks:
+          - name: "{{ docker_network }}"
 
   handlers:
     - name: Start Docker
