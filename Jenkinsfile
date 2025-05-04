@@ -688,7 +688,10 @@ pipeline {
                     // Download the private key from Terraform output
                     sh 'terraform output -raw private_key_pem > my-unique-terraform-key-v2.pem'
                     
-                    // Set permissions on the key
+                    // Check if the private key was downloaded
+                    sh 'ls -l my-unique-terraform-key-v2.pem'
+                    
+                    // Set permissions on the private key
                     sh 'chmod 400 my-unique-terraform-key-v2.pem'
                 }
             }
