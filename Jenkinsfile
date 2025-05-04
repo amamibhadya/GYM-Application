@@ -577,142 +577,100 @@
 
 // 
 
+provider "aws" {
+  region = "eu-north-1"
+}
 
-pipeline {
-    agent any
+resource "tls_private_key" "key_pair" {
+  algorithm = "RSA"
+  rsa_bits  = 2048
+}
 
-    environment {
-        AWS_ACCESS_KEY_ID = credentials('aws-access-key-id')
-        AWS_SECRET_ACCESS_KEY = credentials('aws-secret-access-key')
-        AWS_DEFAULT_REGION = 'eu-north-1'
-        DOCKER_HUB_CREDENTIALS = credentials('gym')
-        DOCKER_USERNAME = 'uresha2001'
-        BUILD_TAG = "${env.BUILD_NUMBER ?: 'latest'}"
-        DOCKER_IMAGE_FRONTEND = "uresha2001/frontend"
-        DOCKER_IMAGE_BACKEND = "uresha2001/backend"
-        DOCKER_IMAGE_DATABASE = "uresha2001/mongo"
-    }
+resource "aws_key_pair" "key_pair" {
+  key_name   = "my-unique-terraform-key"  # Changed key name to avoid conflict
+  public_key = tls_private_key.key_pair.public_key_openssh
+}
 
-    stages {
-        stage('SCM Checkout') {
-            steps {
-                retry(3) {
-                    git branch: 'main', url: 'https://github.com/amamibhadya/GYM-Application'
-                }
-            }
-        }
+resource "aws_security_group" "allow_ssh" {
+  name        = "allow_ssh_http_ports_v2"  # Changed security group name to avoid conflict
+  description = "Allow SSH, HTTP, HTTPS, frontend and backend access"
 
-        stage('Check Build Context') {
-            steps {
-                bat '''
-                if not exist backend exit /b 1
-                if not exist frontend exit /b 1
-                '''
-            }
-        }
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-        stage('Build Backend Docker Image') {
-            steps {
-                bat "docker build -t ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} ./backend"
-            }
-        }
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-        stage('Build Frontend Docker Image') {
-            steps {
-                bat "docker build -t ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG} ./frontend"
-            }
-        }
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-        stage('Pull MongoDB Image') {
-            steps {
-                bat "docker pull mongo:6.0"
-                bat "docker tag mongo:6.0 ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}"
-            }
-        }
+  ingress {
+    from_port   = 5173
+    to_port     = 5173
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-        stage('Login to Docker Hub') {
-            steps {
-                withCredentials([string(credentialsId: 'gym', variable: 'DOCKER_PASSWORD')]) {
-                    bat "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
-                }
-            }
-        }
+  ingress {
+    from_port   = 3001
+    to_port     = 3001
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-        stage('Push Docker Images') {
-            parallel {
-                stage('Push Frontend') {
-                    steps {
-                        bat "docker push ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG}"
-                    }
-                }
-                stage('Push Backend') {
-                    steps {
-                        bat "docker push ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG}"
-                    }
-                }
-                stage('Push MongoDB') {
-                    steps {
-                        bat "docker push ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}"
-                    }
-                }
-            }
-        }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
 
-        stage('Terraform Init') {
-            steps {
-                bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform init
-                '''
-            }
-        }
+  lifecycle {
+    prevent_destroy = true
+  }
+}
 
-        stage('Terraform Plan') {
-            steps {
-                bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform plan -out=tfplan
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform show
-                '''
-            }
-        }
+resource "aws_instance" "my_instance" {
+  ami           = "ami-0274f4b62b6ae3bd5"  # Use appropriate AMI for your region
+  instance_type = "t3.micro"
 
-        stage('Terraform Apply') {
-            steps {
-                bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform apply -auto-approve tfplan
-                '''
-            }
-        }
-      
-        // stage('Deploy to EC2 via SSH') {
-        //     steps {
-        //         bat """
-        //         C:\\Windows\\System32\\wsl.exe -u uresha ssh -i /home/uresha/my-unique-terraform-key-v2.pem -o StrictHostKeyChecking=no ec2-user@13.49.227.56 "docker pull ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG} && docker pull ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} && docker pull ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG} && docker stop mongo_container backend_container frontend_container || true && docker rm mongo_container backend_container frontend_container || true && docker run -d --name mongo_container -p 27017:27017 ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG} && docker run -d --name backend_container -p 3001:3001 -e MONGO_URI='mongodb://mongo_container:27017/gymdb' ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} && docker run -d --name frontend_container -p 80:5173 -e VITE_API_URL='http://13.49.227.56/:3001' ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG}"
-        //         """
-        //     }
-        // }
-    
-        stage('Deploy to EC2 via SSH') {
-            steps {
-                bat """
-                C:\\Windows\\System32\\wsl.exe -u uresha ssh -i /home/uresha/my-unique-terraform-key-v2.pem -o StrictHostKeyChecking=no ec2-user@13.60.228.35 "docker pull ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG} && docker pull ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} && docker pull ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG} && docker stop mongo_container backend_container frontend_container || true && docker rm mongo_container backend_container frontend_container || true && docker run -d --name mongo_container -p 27017:27017 ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG} && docker run -d --name backend_container -p 3001:3001 -e MONGO_URI='mongodb://mongo_container:27017/gymdb' ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} && docker run -d --name frontend_container -p 80:5173 -e VITE_API_URL='http://13.48.148.7/:3001' ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG}"
-                """
-            }
-        }
-        // stage('Deploy to EC2 using Ansible') {
-        //     steps {
-        //         bat 'wsl -u uresha ansible-playbook /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml'
-        //     }
-        // }
+  key_name        = aws_key_pair.key_pair.key_name
+  security_groups = [aws_security_group.allow_ssh.name]
 
+  tags = {
+    Name = "MyEC2Instance"
+  }
 
-    }
+  # Add user_data to install Docker on the EC2 instance
+  user_data = <<-EOF
+              #!/bin/bash
+              yum update -y
+              amazon-linux-extras install docker -y
+              systemctl enable docker
+              systemctl start docker
+              usermod -aG docker ec2-user
+              EOF
+}
 
-    post {
-        always {
-            echo 'Deployment process completed.'
-        }
-        failure {
-            echo 'Pipeline failed. Check the logs for errors.'
-        }
-    }
+output "ec2_public_ip" {
+  description = "Public IP of the created EC2 instance"
+  value       = aws_instance.my_instance.public_ip
+}
+
+output "private_key_pem" {
+  description = "Private key to SSH into the instance"
+  value       = tls_private_key.key_pair.private_key_pem
+  sensitive   = true
 }
