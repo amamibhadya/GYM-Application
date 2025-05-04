@@ -682,6 +682,17 @@ pipeline {
                 '''
             }
         }
+        stage('Download Private Key') {
+            steps {
+                script {
+                    // Download the private key from Terraform output
+                    sh 'terraform output -raw private_key_pem > my-unique-terraform-key-v2.pem'
+                    
+                    // Set permissions on the key
+                    sh 'chmod 400 my-unique-terraform-key-v2.pem'
+                }
+            }
+        }
 
         stage('Deploy to EC2 via SSH') {
             steps {
