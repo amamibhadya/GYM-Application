@@ -8,12 +8,12 @@ resource "tls_private_key" "key_pair" {
 }
 
 resource "aws_key_pair" "key_pair" {
-  key_name   = "my-unique-terraform-key"  # Changed key name to avoid conflict
+  key_name   = "my-unique-terraform-key"
   public_key = tls_private_key.key_pair.public_key_openssh
 }
 
 resource "aws_security_group" "allow_ssh" {
-  name        = "allow_ssh_http_ports_v2"  # Changed security group name to avoid conflict
+  name        = "allow_ssh_http_ports_v3"  # 🔄 Changed to a unique name
   description = "Allow SSH, HTTP, HTTPS, frontend and backend access"
 
   ingress {
@@ -64,7 +64,7 @@ resource "aws_security_group" "allow_ssh" {
 }
 
 resource "aws_instance" "my_instance" {
-  ami           = "ami-0274f4b62b6ae3bd5"  # Use appropriate AMI for your region
+  ami           = "ami-0274f4b62b6ae3bd5"
   instance_type = "t3.micro"
 
   key_name        = aws_key_pair.key_pair.key_name
@@ -74,7 +74,6 @@ resource "aws_instance" "my_instance" {
     Name = "MyEC2Instance"
   }
 
-  # Add user_data to install Docker on the EC2 instance
   user_data = <<-EOF
               #!/bin/bash
               yum update -y
