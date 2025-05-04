@@ -590,6 +590,7 @@ pipeline {
         DOCKER_IMAGE_FRONTEND = "uresha2001/frontend"
         DOCKER_IMAGE_BACKEND = "uresha2001/backend"
         DOCKER_IMAGE_DATABASE = "uresha2001/mongo"
+        TERRAFORM_DIR = "/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform"
     }
 
     stages {
@@ -612,27 +613,27 @@ pipeline {
 
         stage('Build Backend Docker Image') {
             steps {
-                bat "docker build -t ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} ./backend"
+                bat "docker build -t %DOCKER_IMAGE_BACKEND%:%BUILD_TAG% ./backend"
             }
         }
 
         stage('Build Frontend Docker Image') {
             steps {
-                bat "docker build -t ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG} ./frontend"
+                bat "docker build -t %DOCKER_IMAGE_FRONTEND%:%BUILD_TAG% ./frontend"
             }
         }
 
         stage('Pull MongoDB Image') {
             steps {
                 bat "docker pull mongo:6.0"
-                bat "docker tag mongo:6.0 ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}"
+                bat "docker tag mongo:6.0 %DOCKER_IMAGE_DATABASE%:%BUILD_TAG%"
             }
         }
 
         stage('Login to Docker Hub') {
             steps {
                 withCredentials([string(credentialsId: 'gym', variable: 'DOCKER_PASSWORD')]) {
-                    bat "docker login -u ${DOCKER_USERNAME} -p ${DOCKER_PASSWORD}"
+                    bat "docker login -u %DOCKER_USERNAME% -p %DOCKER_PASSWORD%"
                 }
             }
         }
@@ -641,17 +642,17 @@ pipeline {
             parallel {
                 stage('Push Frontend') {
                     steps {
-                        bat "docker push ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG}"
+                        bat "docker push %DOCKER_IMAGE_FRONTEND%:%BUILD_TAG%"
                     }
                 }
                 stage('Push Backend') {
                     steps {
-                        bat "docker push ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG}"
+                        bat "docker push %DOCKER_IMAGE_BACKEND%:%BUILD_TAG%"
                     }
                 }
                 stage('Push MongoDB') {
                     steps {
-                        bat "docker push ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG}"
+                        bat "docker push %DOCKER_IMAGE_DATABASE%:%BUILD_TAG%"
                     }
                 }
             }
@@ -659,45 +660,40 @@ pipeline {
 
         stage('Terraform Init') {
             steps {
-                bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform init
-                '''
+                bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=%TERRAFORM_DIR% init'
             }
         }
 
         stage('Terraform Plan') {
             steps {
                 bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform plan -out=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform/tfplan
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform show
+                C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=%TERRAFORM_DIR% plan -out=tfplan
+                C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=%TERRAFORM_DIR% show tfplan
                 '''
             }
         }
-
 
         stage('Terraform Apply') {
             steps {
-                bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform apply -auto-approve /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform/tfplan
-                '''
+                bat 'C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=%TERRAFORM_DIR% apply -auto-approve tfplan'
             }
         }
 
-
-        stage('Deploy to EC2 via ansible') {
+        stage('Deploy to EC2 via SSH') {
             steps {
                 bat """
-                C:\\Windows\\System32\\wsl.exe -u uresha ssh -i /home/uresha/my-terraform-key.pem -o StrictHostKeyChecking=no ec2-user@13.48.148.7 "docker pull ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG} && docker pull ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} && docker pull ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG} && docker stop mongo_container backend_container frontend_container || true && docker rm mongo_container backend_container frontend_container || true && docker run -d --name mongo_container -p 27017:27017 ${DOCKER_IMAGE_DATABASE}:${BUILD_TAG} && docker run -d --name backend_container -p 3001:3001 -e MONGO_URI='mongodb://mongo_container:27017/gymdb' ${DOCKER_IMAGE_BACKEND}:${BUILD_TAG} && docker run -d --name frontend_container -p 80:5173 -e VITE_API_URL='http://13.60.228.35/:3001' ${DOCKER_IMAGE_FRONTEND}:${BUILD_TAG}"
+                C:\\Windows\\System32\\wsl.exe -u uresha ssh -i /home/uresha/my-terraform-key.pem -o StrictHostKeyChecking=no ec2-user@13.48.148.7 \\
+                "docker pull %DOCKER_IMAGE_DATABASE%:%BUILD_TAG% && \\
+                 docker pull %DOCKER_IMAGE_BACKEND%:%BUILD_TAG% && \\
+                 docker pull %DOCKER_IMAGE_FRONTEND%:%BUILD_TAG% && \\
+                 docker stop mongo_container backend_container frontend_container || true && \\
+                 docker rm mongo_container backend_container frontend_container || true && \\
+                 docker run -d --name mongo_container -p 27017:27017 %DOCKER_IMAGE_DATABASE%:%BUILD_TAG% && \\
+                 docker run -d --name backend_container -p 3001:3001 -e MONGO_URI='mongodb://mongo_container:27017/gymdb' %DOCKER_IMAGE_BACKEND%:%BUILD_TAG% && \\
+                 docker run -d --name frontend_container -p 80:5173 -e VITE_API_URL='http://13.60.228.35:3001' %DOCKER_IMAGE_FRONTEND%:%BUILD_TAG%"
                 """
             }
         }
-        // stage('Deploy to EC2 using Ansible') {
-        //     steps {
-        //         bat 'wsl -u uresha ansible-playbook /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/ansible/deploy.yml'
-        //     }
-        // }
-
-
     }
 
     post {
