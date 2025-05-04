@@ -8,9 +8,10 @@ resource "tls_private_key" "key_pair" {
 }
 
 resource "aws_key_pair" "key_pair" {
-  key_name   = "my-unique-terraform-key"
+  key_name   = "my-unique-terraform-key-v2"  # Changed name
   public_key = tls_private_key.key_pair.public_key_openssh
 }
+
 
 resource "aws_security_group" "allow_ssh" {
   name        = "allow_ssh_http_ports_v3"  # 🔄 Changed to a unique name
