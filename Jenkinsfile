@@ -668,19 +668,21 @@ pipeline {
         stage('Terraform Plan') {
             steps {
                 bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform plan -out=tfplan
+                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform plan -out=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform/tfplan
                     C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform show
                 '''
             }
         }
 
+
         stage('Terraform Apply') {
             steps {
                 bat '''
-                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform apply -auto-approve tfplan
+                    C:\\Windows\\System32\\wsl.exe -u uresha terraform -chdir=/mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform apply -auto-approve /mnt/c/Users/IPK/Documents/GitHub/GYM-Application/Backend/terraform/tfplan
                 '''
             }
         }
+
 
         stage('Deploy to EC2 via ansible') {
             steps {
